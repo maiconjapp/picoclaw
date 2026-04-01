@@ -34,25 +34,25 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
     {
       "model_name": "openrouter-claude-3.5",
       "model": "anthropic/claude-3.5-sonnet",
-      "api_key": "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",
+      "api_key": "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",
       "api_base": "https://openrouter.ai/api/v1"
     },
     {
       "model_name": "openrouter-gpt4",
       "model": "openai/gpt-4-turbo",
-      "api_key": "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",
+      "api_key": "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",
       "api_base": "https://openrouter.ai/api/v1"
     },
     {
       "model_name": "openrouter-claude-3-opus",
       "model": "anthropic/claude-3-opus",
-      "api_key": "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",
+      "api_key": "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",
       "api_base": "https://openrouter.ai/api/v1"
     },
     {
       "model_name": "openrouter-gemini-flash",
       "model": "google/gemini-3.1-flash-image-preview",
-      "api_key": "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",
+      "api_key": "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",
       "api_base": "https://openrouter.ai/api/v1",
       "capabilities": ["vision", "image_understanding", "fast_inference"]
     }
