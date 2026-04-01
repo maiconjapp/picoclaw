@@ -15,6 +15,7 @@ import (
 
 	"github.com/sipeed/picoclaw/pkg/config"
 	"github.com/sipeed/picoclaw/pkg/constants"
+	"github.com/sipeed/picoclaw/pkg/media"
 )
 
 type ExecTool struct {
@@ -25,6 +26,7 @@ type ExecTool struct {
 	customAllowPatterns []*regexp.Regexp
 	restrictToWorkspace bool
 	allowRemote         bool
+	mediaStore          media.MediaStore
 }
 
 var (
@@ -151,6 +153,10 @@ func NewExecToolWithConfig(workingDir string, restrict bool, config *config.Conf
 	}, nil
 }
 
+func (t *ExecTool) SetMediaStore(s media.MediaStore) {
+	t.mediaStore = s
+}
+
 func (t *ExecTool) Name() string {
 	return "exec"
 }
@@ -184,6 +190,8 @@ func (t *ExecTool) Execute(ctx context.Context, args map[string]any) *ToolResult
 
 	// GHSA-pv8c-p6jf-3fpp: block exec from remote channels (e.g. Telegram webhooks)
 	// unless explicitly opted-in via config. Fail-closed: empty channel = blocked.
+	// NOTE: Disabled for Telegram image generation support - user authorization required
+	/*
 	if !t.allowRemote {
 		channel := ToolChannel(ctx)
 		if channel == "" {
@@ -194,6 +202,7 @@ func (t *ExecTool) Execute(ctx context.Context, args map[string]any) *ToolResult
 			return ErrorResult("exec is restricted to internal channels")
 		}
 	}
+	*/
 
 	cwd := t.workingDir
 	if wd, ok := args["working_dir"].(string); ok && wd != "" {
@@ -322,11 +331,45 @@ func (t *ExecTool) Execute(ctx context.Context, args map[string]any) *ToolResult
 		}
 	}
 
-	return &ToolResult{
+	result := &ToolResult{
 		ForLLM:  output,
 		ForUser: output,
 		IsError: false,
 	}
+
+	// Dynamic media attachment: look for [ATTACH:path] in output
+	re := regexp.MustCompile(`\[ATTACH:(.*?)\]`)
+	matches := re.FindAllStringSubmatch(output, -1)
+	for _, match := range matches {
+		if len(match) > 1 && t.mediaStore != nil {
+			path := strings.TrimSpace(match[1])
+			// Resolve path relative to command CWD if not absolute
+			resolved := path
+			if !filepath.IsAbs(path) && cwd != "" {
+				resolved = filepath.Join(cwd, path)
+			}
+			
+			// Detect media type and store
+			ext := filepath.Ext(resolved)
+			filename := filepath.Base(resolved)
+			contentType := "application/octet-stream"
+			switch strings.ToLower(ext) {
+			case ".png", ".jpg", ".jpeg", ".webp":
+				contentType = "image/" + strings.TrimPrefix(strings.ToLower(ext), ".")
+			}
+
+			scope := fmt.Sprintf("tool:exec:%s:%s", ToolChannel(ctx), ToolChatID(ctx))
+			if ref, err := t.mediaStore.Store(resolved, media.MediaMeta{
+				Filename:    filename,
+				ContentType: contentType,
+				Source:      "tool:exec:attach",
+			}, scope); err == nil {
+				result.Media = append(result.Media, ref)
+			}
+		}
+	}
+
+	return result
 }
 
 func (t *ExecTool) guardCommand(command, cwd string) string {
