@@ -16,7 +16,7 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
       "workspace": "~/.picoclaw/workspace",
       "restrict_to_workspace": false,
       "model_name": "openrouter-claude-3.5",
-      "fallback_models": ["openrouter-gemini-flash", "nvidia-nim", "openrouter-gpt4"],
+      "fallback_models": ["openrouter-gemini-flash", "openrouter-gpt4"],
       "max_tokens": 32768,
       "temperature": 0.8,
       "max_tool_iterations": 100,
