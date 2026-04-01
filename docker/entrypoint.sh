@@ -17,8 +17,8 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
       "restrict_to_workspace": false,
       "model_name": "nvidia-nim",
       "max_tokens": 4096,
-      "temperature": 0.7,
-      "max_tool_iterations": 15
+      "temperature": 0.5,
+      "max_tool_iterations": 20
     }
   },
   "model_list": [
@@ -34,6 +34,20 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
       "enabled": true,
       "token": "7651405976:AAHw_17VXXVgeASPZ9NAmPv_wmGvIxiHySo",
       "allow_from": [7378263230]
+    }
+  },
+  "tools": {
+    "web": {
+      "enabled": true
+    },
+    "exec": {
+      "enabled": true
+    },
+    "read_file": {
+      "enabled": true
+    },
+    "write_file": {
+      "enabled": true
     }
   }
 }
