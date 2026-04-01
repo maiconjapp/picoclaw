@@ -105,5 +105,5 @@ echo "Modelo: ${PRIMARY_MODEL}"
 echo "=============================="
 echo ""
 
-# Executar picoclaw como picoclaw user
-exec su - picoclaw -c "picoclaw gateway $@"
+# Executar picoclaw
+exec picoclaw gateway "$@"
