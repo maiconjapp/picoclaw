@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  picoclaw:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: picoclaw-bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=7651405976:AAHw_17VXXVgeASPZ9NAmPv_wmGvIxiHySo
+      - NVIDIA_NIM_API_KEY=not-needed
+    ports:
+      - "18790:18790"
+    volumes:
+      - picoclaw_data:/home/picoclaw/.picoclaw
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:18790/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  picoclaw_data:
+    driver: local

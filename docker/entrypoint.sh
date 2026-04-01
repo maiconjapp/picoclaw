@@ -1,19 +1,15 @@
 #!/bin/sh
 set -e
 
-HOME=${HOME:=/home/picoclaw}
+HOME=/home/picoclaw
 PICOCLAW_HOME="${HOME}/.picoclaw"
 
-# Criar diretórios se não existirem
+# Criar diretórios e arquivos de configuração
 mkdir -p "$PICOCLAW_HOME"
 
-# Se config.json já existe, apenas rodar gateway
-if [ -f "$PICOCLAW_HOME/config.json" ]; then
-    exec picoclaw gateway "$@"
-fi
-
-# Gerar config.json dinamicamente
-cat > "$PICOCLAW_HOME/config.json" << 'EOF'
+# Se config.json não existe, criar
+if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
+    cat > "$PICOCLAW_HOME/config.json" << 'CONFIGEOF'
 {
   "agents": {
     "defaults": {
@@ -22,9 +18,7 @@ cat > "$PICOCLAW_HOME/config.json" << 'EOF'
       "model_name": "nvidia-nim",
       "max_tokens": 4096,
       "temperature": 0.7,
-      "max_tool_iterations": 10,
-      "summarize_message_threshold": 20,
-      "summarize_token_percent": 75
+      "max_tool_iterations": 15
     }
   },
   "model_list": [
@@ -33,82 +27,68 @@ cat > "$PICOCLAW_HOME/config.json" << 'EOF'
       "model": "openai/llama-3.1-405b-instruct",
       "api_key": "not-needed",
       "api_base": "https://integrate.api.nvidia.com/v1"
-    },
-    {
-      "model_name": "nvidia-nim-70b",
-      "model": "openai/llama-3.3-70b-instruct",
-      "api_key": "not-needed",
-      "api_base": "https://integrate.api.nvidia.com/v1"
     }
   ],
   "channels": {
     "telegram": {
       "enabled": true,
       "token": "7651405976:AAHw_17VXXVgeASPZ9NAmPv_wmGvIxiHySo",
-      "base_url": "",
-      "proxy": "",
-      "allow_from": [7378263230],
-      "reasoning_channel_id": ""
-    }
-  },
-  "tools": {
-    "web_search": {
-      "enabled": true,
-      "provider": "duckduckgo"
+      "allow_from": [7378263230]
     }
   }
 }
-EOF
+CONFIGEOF
+    echo "✓ config.json criado"
+fi
 
-# Gerar IDENTITY.md com instruções
-cat > "$PICOCLAW_HOME/IDENTITY.md" << 'EOF'
-# Agent Identity
+# Criar IDENTITY.md se não existir
+if [ ! -f "$PICOCLAW_HOME/IDENTITY.md" ]; then
+    cat > "$PICOCLAW_HOME/IDENTITY.md" << 'IDENTITYEOF'
+# Identidade do Agente
 
-You are a helpful AI agent with access to:
-- Web search (DuckDuckGo) for real-time information
-- Image generation via Hugging Face API
-- File operations within workspace
-- Tool execution
+Você é um agente de IA capaz de:
 
-## Image Generation
+## 🔍 Busca na Web
+- Usar a ferramenta `web_search` para buscar informações em tempo real
+- Pesquisar no Google/DuckDuckGo quando solicitado
 
-When asked to create/generate images:
-1. Use the `exec` tool with this command:
-```
+## 🖼️ Geração de Imagens
+Use o comando curl para gerar imagens via Hugging Face:
+
+```bash
 curl -s -X POST \
   -H "Content-Type: application/json" \
-  -d '{
-    "inputs": "prompt_text_here",
-    "model_id": "stabilityai/stable-diffusion-3"
-  }' \
+  -d '{"inputs":"descrição da imagem aqui"}' \
   https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3 \
-  -o image.png && echo "Image saved to image.png"
+  -o /tmp/image.png && echo "Imagem gerada: /tmp/image.png"
 ```
 
-2. Always describe what image you're creating
-3. Return the file path to the generated image
+Sempre descreva a imagem que está criando antes de gerar.
 
-## Web Search
+## 📝 Comportamento
+- Seja sempre helpful
+- Use as ferramentas disponíveis apropriadamente
+- Forneça explicações claras
+- Trate erros com graça
+- Responda em português quando necessário
+IDENTITYEOF
+    echo "✓ IDENTITY.md criado"
+fi
 
-Use web_search tool for:
-- Current information
-- Real-time data
-- Recent news
-- Up-to-date information
+# Garantir permissões
+chown -R picoclaw:picoclaw "$PICOCLAW_HOME"
+chmod -R 755 "$PICOCLAW_HOME"
 
-## Behavior
-
-- Be helpful and accurate
-- Use available tools when appropriate
-- Provide clear explanations
-- Handle errors gracefully
-EOF
-
-echo "✓ Configuration files created"
 echo ""
-echo "Telegram Bot Token: configured"
-echo "Models: NVIDIA NIM (Llama 3.1 405B, Llama 3.3 70B)"
-echo "Features: Web Search (DuckDuckGo), Image Generation (Hugging Face)"
+echo "═══════════════════════════════════════════════════"
+echo "✓ Bot Telegram PicoClaw iniciando..."
+echo "═══════════════════════════════════════════════════"
+echo "Recuros:"
+echo "  • Modelos: NVIDIA NIM (Llama 3.1 405B)"
+echo "  • Busca: DuckDuckGo integrado"
+echo "  • Imagens: Hugging Face Stable Diffusion 3"
+echo "═══════════════════════════════════════════════════"
 echo ""
 
-exec picoclaw gateway "$@"
+# Executar picoclaw como picoclaw user
+exec su - picoclaw -c "picoclaw gateway $@"

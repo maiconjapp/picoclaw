@@ -33,11 +33,12 @@ COPY --from=builder /src/build/picoclaw /usr/local/bin/picoclaw
 RUN addgroup -g 1000 picoclaw && \
     adduser -D -u 1000 -G picoclaw picoclaw
 
+# Copy entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Switch to non-root user
 USER picoclaw
 
-# Run onboard to create initial directories and config
-RUN /usr/local/bin/picoclaw onboard
-
-ENTRYPOINT ["picoclaw"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["gateway"]
