@@ -16,11 +16,12 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
       "workspace": "~/.picoclaw/workspace",
       "restrict_to_workspace": false,
       "model_name": "openrouter-claude-3.5",
-      "fallback_models": ["nvidia-nim", "openrouter-gpt4"],
+      "fallback_models": ["openrouter-gemini-flash", "nvidia-nim", "openrouter-gpt4"],
       "max_tokens": 32768,
       "temperature": 0.8,
       "max_tool_iterations": 100,
-      "enable_parallel_tools": true
+      "enable_parallel_tools": true,
+      "prefer_vision_models_for": ["image_analysis", "visual_content", "design"]
     }
   },
   "model_list": [
@@ -47,6 +48,13 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
       "model": "anthropic/claude-3-opus",
       "api_key": "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",
       "api_base": "https://openrouter.ai/api/v1"
+    },
+    {
+      "model_name": "openrouter-gemini-flash",
+      "model": "google/gemini-3.1-flash-image-preview",
+      "api_key": "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",
+      "api_base": "https://openrouter.ai/api/v1",
+      "capabilities": ["vision", "image_understanding", "fast_inference"]
     }
   ],
   "channels": {
@@ -98,25 +106,36 @@ Você é um agente de IA extremamente capaz, sem limitações significativas. Po
 
 **Primário (Padrão):**
 - 🎯 **Claude 3.5 Sonnet** (OpenRouter)
-  - Melhor para: Criação de conteúdo, escrita criativa
-  - Velocidade: Média
+  - Melhor para: Criação de conteúdo, escrita criativa, copywriting
+  - Velocidade: ⚡ Média
   - Custo: Balanceado
+  - Suporta: Texto
 
-**Alternativos (Fallback):**
+**Alternativos (Fallback Inteligente):**
+- ⚡ **Gemini 3.1 Flash** (OpenRouter) - **NOVO!**
+  - Melhor para: Análise de imagens, visão computacional, resposta rápida
+  - Velocidade: ⚡⚡ Ultra-rápida
+  - Custo: Muito baixo
+  - Suporta: Texto + Imagens + Vídeo
+  - Casos de uso: Análise de design, feedback visual, geração rápida
+
 - 🔧 **NVIDIA NIM Llama 3.1 405B**
-  - Melhor para: Análise técnica, código
-  - Velocidade: Rápida
+  - Melhor para: Análise técnica, código, lógica complexa
+  - Velocidade: ⚡⚡ Muito rápida
   - Custo: Grátis (local)
+  - Suporta: Texto
 
 - 🚀 **GPT-4 Turbo** (OpenRouter)
-  - Melhor para: Tarefas muito complexas
-  - Velocidade: Lenta
+  - Melhor para: Tarefas muito complexas, raciocínio profundo
+  - Velocidade: 🐢 Lenta
   - Custo: Premium
+  - Suporta: Texto
 
 - 👑 **Claude 3 Opus** (OpenRouter)
-  - Melhor para: Análise profunda
-  - Velocidade: Muito lenta
+  - Melhor para: Análise profunda, contexto longo
+  - Velocidade: 🐢 Muito lenta
   - Custo: Premium
+  - Suporta: Texto
 
 ### Configurações Gerais
 - **Max Tokens**: 32,768 (respostas muito longas)
