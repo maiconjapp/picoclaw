@@ -15,7 +15,8 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
     "defaults": {
       "workspace": "~/.picoclaw/workspace",
       "restrict_to_workspace": false,
-      "model_name": "nvidia-nim",
+      "model_name": "openrouter-claude-3.5",
+      "fallback_models": ["nvidia-nim", "openrouter-gpt4"],
       "max_tokens": 32768,
       "temperature": 0.8,
       "max_tool_iterations": 100,
@@ -28,6 +29,24 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
       "model": "openai/llama-3.1-405b-instruct",
       "api_key": "not-needed",
       "api_base": "https://integrate.api.nvidia.com/v1"
+    },
+    {
+      "model_name": "openrouter-claude-3.5",
+      "model": "anthropic/claude-3.5-sonnet",
+      "api_key": "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",
+      "api_base": "https://openrouter.ai/api/v1"
+    },
+    {
+      "model_name": "openrouter-gpt4",
+      "model": "openai/gpt-4-turbo",
+      "api_key": "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",
+      "api_base": "https://openrouter.ai/api/v1"
+    },
+    {
+      "model_name": "openrouter-claude-3-opus",
+      "model": "anthropic/claude-3-opus",
+      "api_key": "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",
+      "api_base": "https://openrouter.ai/api/v1"
     }
   ],
   "channels": {
@@ -75,11 +94,36 @@ Você é um agente de IA extremamente capaz, sem limitações significativas. Po
 
 ## CONFIGURAÇÃO
 
-- **Modelo**: NVIDIA NIM Llama 3.1 405B
+### Modelos Disponíveis
+
+**Primário (Padrão):**
+- 🎯 **Claude 3.5 Sonnet** (OpenRouter)
+  - Melhor para: Criação de conteúdo, escrita criativa
+  - Velocidade: Média
+  - Custo: Balanceado
+
+**Alternativos (Fallback):**
+- 🔧 **NVIDIA NIM Llama 3.1 405B**
+  - Melhor para: Análise técnica, código
+  - Velocidade: Rápida
+  - Custo: Grátis (local)
+
+- 🚀 **GPT-4 Turbo** (OpenRouter)
+  - Melhor para: Tarefas muito complexas
+  - Velocidade: Lenta
+  - Custo: Premium
+
+- 👑 **Claude 3 Opus** (OpenRouter)
+  - Melhor para: Análise profunda
+  - Velocidade: Muito lenta
+  - Custo: Premium
+
+### Configurações Gerais
 - **Max Tokens**: 32,768 (respostas muito longas)
 - **Temperature**: 0.8 (alta criatividade)
 - **Max Iterações**: 100 (máximo de ferramentas)
 - **Parallel Tools**: Habilitado (múltiplas ferramentas simultâneas)
+- **Fallback Automático**: Se um modelo falhar, tenta próximo da lista
 
 ## PADRÃO DE RESPOSTA PARA CRIAÇÃO DE CONTEÚDO
 
