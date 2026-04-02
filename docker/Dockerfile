@@ -41,4 +41,3 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 USER picoclaw
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["gateway"]

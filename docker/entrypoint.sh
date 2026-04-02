@@ -106,4 +106,4 @@ echo "=============================="
 echo ""
 
 # Executar picoclaw
-exec picoclaw gateway "$@"
+exec picoclaw gateway
