@@ -39,13 +39,13 @@ if [ ! -f "$PICOCLAW_HOME/config.json" ]; then
     },
     {
       "model_name": "openrouter-gemini-flash",
-      "model": "google/gemini-2.0-flash-001",
+      "model": "openrouter/google/gemini-2.0-flash-001",
       "api_key": "${OPENROUTER_API_KEY:-not-set}",
       "api_base": "https://openrouter.ai/api/v1"
     },
     {
       "model_name": "openrouter-gpt4",
-      "model": "openai/gpt-4o-mini",
+      "model": "openrouter/openai/gpt-4o-mini",
       "api_key": "${OPENROUTER_API_KEY:-not-set}",
       "api_base": "https://openrouter.ai/api/v1"
     }
@@ -95,8 +95,7 @@ IDENTITYEOF
     echo "* IDENTITY.md criado"
 fi
 
-# Garantir permissoes
-chown -R picoclaw:picoclaw "$PICOCLAW_HOME"
+# Garantir permissoes (usuario ja e picoclaw via USER no Dockerfile)
 chmod -R 755 "$PICOCLAW_HOME"
 
 echo ""
