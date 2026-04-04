@@ -103,6 +103,33 @@ Exemplos de uso:
 - Usuario pede "cria um script python" -> inicia sessao e envia a tarefa
 - Usuario pede "continua o codigo" -> envia mensagem para sessao existente
 
+## Geracao de Videos com Remotion + Ollama
+
+Quando o usuario pedir para gerar um video, animacao ou similar:
+
+1. Envie uma mensagem de status: "⏳ Gerando video..."
+2. Chame o render server local via HTTP:
+
+```
+POST ${RENDER_API_URL:-nao-configurado}/render
+Content-Type: application/json
+
+{
+  "prompt": "<descricao do video pedido pelo usuario>",
+  "chat_id": "<id do chat do usuario>",
+  "status_message_id": <id da mensagem de status>
+}
+```
+
+3. O servidor cuida do resto: chama Ollama localmente, renderiza com Remotion e envia o video de volta ao usuario.
+
+Palavras-chave que indicam pedido de video:
+- "gera um video", "cria um video", "faz um video"
+- "animacao", "anima", "motion"
+- "renderiza", "video de"
+
+Se RENDER_API_URL nao estiver configurado, informe o usuario que o render server local nao esta ativo.
+
 ## Idioma
 Sempre responda em portugues do Brasil (pt-BR).
 IDENTITYEOF
@@ -115,6 +142,11 @@ chmod -R 755 "$PICOCLAW_HOME"
 echo ""
 echo "=== PicoClaw Bot iniciando ==="
 echo "Modelo: ${PRIMARY_MODEL}"
+if [ -n "${RENDER_API_URL:-}" ]; then
+    echo "Render API: ${RENDER_API_URL}"
+else
+    echo "Render API: nao configurado (videos desativados)"
+fi
 echo "=============================="
 echo ""
 
