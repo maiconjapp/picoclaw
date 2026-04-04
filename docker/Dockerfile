@@ -20,7 +20,8 @@ RUN make build
 # ============================================================
 FROM alpine:3.23
 
-RUN apk add --no-cache ca-certificates tzdata curl jq bash nodejs npm
+RUN apk add --no-cache ca-certificates tzdata curl jq bash nodejs npm && \
+    npm install -g @enderfga/openclaw-claude-code
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

@@ -89,6 +89,20 @@ Seja direto e pratico. Use as ferramentas disponiveis para ajudar o usuario.
 - exec: executar comandos do sistema
 - read_file / write_file: ler e escrever arquivos
 
+## Claude Code Sessions (openclaw-claude-code)
+Voce tem acesso ao `claude-code-skill` para gerenciar sessoes de coding agentes.
+Use via ferramenta exec:
+
+- Iniciar sessao: `claude-code-skill session-start <nome>`
+- Enviar tarefa: `claude-code-skill session-send <nome> "<tarefa>"`
+- Listar sessoes: `claude-code-skill session-list`
+- Status: `claude-code-skill session-status <nome>`
+- Parar sessao: `claude-code-skill session-stop <nome>`
+
+Exemplos de uso:
+- Usuario pede "cria um script python" -> inicia sessao e envia a tarefa
+- Usuario pede "continua o codigo" -> envia mensagem para sessao existente
+
 ## Idioma
 Sempre responda em portugues do Brasil (pt-BR).
 IDENTITYEOF
@@ -103,6 +117,12 @@ echo "=== PicoClaw Bot iniciando ==="
 echo "Modelo: ${PRIMARY_MODEL}"
 echo "=============================="
 echo ""
+
+# Iniciar claude-code-skill server em background
+if command -v claude-code-skill > /dev/null 2>&1; then
+    claude-code-skill serve --port 18796 &
+    echo "* claude-code-skill server iniciado na porta 18796"
+fi
 
 # Executar picoclaw
 exec picoclaw gateway
