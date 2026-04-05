@@ -115,9 +115,16 @@ Content-Type: application/json
 
 3. Responda "Video sendo gerado, aguarde!" - o servidor envia o video automaticamente.
 
-Palavras que SEMPRE ativam o render server:
+Palavras que SEMPRE ativam o render server (POST /render):
 - "gera um video", "cria um video", "faz um video", "video de"
 - "animacao", "anima", "motion", "renderiza"
+
+EDICAO DE VIDEO - quando usuario quiser modificar o ultimo video gerado:
+- Palavras: "edita", "muda", "altera", "troca", "deixa mais", "coloca", "modifica"
+- Use POST ${RENDER_API_URL:-nao-configurado}/edit com:
+  {"edit": "<instrucao de edicao>", "chat_id": "<chat_id>", "status_message_id": <id>}
+- O servidor usa o codigo anterior do chat automaticamente.
+- Exemplos: "muda a cor para azul", "deixa mais rapido", "adiciona texto no topo"
 
 Se RENDER_API_URL for "nao-configurado", diga: "Render server offline. Inicie o start.ps1 localmente."
 
